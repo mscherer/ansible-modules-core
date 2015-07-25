@@ -512,6 +512,7 @@ def install(module, items, repoq, yum_basecmd, conf_file, en_repos, dis_repos):
     res['rc'] = 0
     res['changed'] = False
     tempdir = tempfile.mkdtemp()
+    is_local = True
 
     for spec in items:
         pkg = None
@@ -556,6 +557,7 @@ def install(module, items, repoq, yum_basecmd, conf_file, en_repos, dis_repos):
         elif  spec.startswith('@'):
             # complete wild ass guess b/c it's a group
             pkg = spec
+            is_local = False
 
         # range requires or file-requires or pkgname :(
         else:
@@ -608,11 +610,16 @@ def install(module, items, repoq, yum_basecmd, conf_file, en_repos, dis_repos):
             # we could get here if nothing provides it but that's not
             # the error we're catching here
             pkg = spec
+            is_local = False
 
         pkgs.append(pkg)
 
     if pkgs:
-        cmd = yum_basecmd + ['install'] + pkgs
+        if is_local:
+            sub_cmd = 'localinstall'
+        else:
+            sub_cmd = 'install'
+        cmd = yum_basecmd + [sub_cmd] + pkgs
 
         if module.check_mode:
             # Remove rpms downloaded for EL5 via url
