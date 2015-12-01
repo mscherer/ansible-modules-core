@@ -306,7 +306,7 @@ def main():
                     module.set_mode_if_different(src, mode, False)
                 if "%s" not in validate:
                     module.fail_json(msg="validate must contain %%s: %s" % (validate))
-                (rc,out,err) = module.run_command(validate % src)
+                (rc,out,err) = module.run_command(validate % src, use_unsafe_shell=True)
                 if rc != 0:
                     module.fail_json(msg="failed to validate: rc:%s error:%s" % (rc,err))
             if remote_src:
