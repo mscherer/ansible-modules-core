@@ -220,7 +220,11 @@ def run_acl(module, cmd, check_rc=True):
         e = get_exception()
         module.fail_json(msg=e.strerror)
 
-    lines = out.splitlines()
+    lines = []
+    for l in out.splitlines():
+        if not l.startswith('#'):
+            lines.append(l.strip())
+
     if lines and not lines[-1].split():
         # trim last line only when it is empty
         return lines[:-1]
