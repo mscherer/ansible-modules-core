@@ -198,6 +198,10 @@ def build_command(module, mode, path, follow, default, recursive, entry=''):
 
 def acl_changed(module, cmd):
     '''Returns true if the provided command affects the existing ACLs, false otherwise.'''
+    # FreeBSD do not have a --test flag, so by default, it is safer to always say "true"
+    if get_platform().lower() == 'freebsd':
+        return True
+
     cmd = cmd[:]  # lists are mutables so cmd would be overriden without this
     cmd.insert(1, '--test')
     lines = run_acl(module, cmd)
