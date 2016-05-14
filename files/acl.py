@@ -179,7 +179,10 @@ def build_command(module, mode, path, follow, default, recursive, entry=''):
         cmd.append('--recursive')
 
     if not follow:
-        cmd.append('--physical')
+        if get_platform().lower() == 'linux':
+            cmd.append('--physical')
+        elif get_platform().lower() == 'freebsd':
+            cmd.append('-h')
 
     if default:
         if(mode == 'rm'):
