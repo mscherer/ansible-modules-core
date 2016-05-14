@@ -171,8 +171,9 @@ def build_command(module, mode, path, follow, default, recursive, entry=''):
     else:  # mode == 'get'
         cmd = [module.get_bin_path('getfacl', True)]
         # prevents absolute path warnings and removes headers
-        cmd.append('--omit-header')
-        cmd.append('--absolute-names')
+        if get_platform().lower() == 'linux':
+            cmd.append('--omit-header')
+            cmd.append('--absolute-names')
 
     if recursive:
         cmd.append('--recursive')
