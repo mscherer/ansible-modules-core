@@ -152,8 +152,10 @@ def split_entry(entry):
     return [d, t, e, p]
 
 
-def build_entry(etype, entity, permissions=None):
+def build_entry(etype, entity, permissions=None, use_nfsv4_acls=False):
     '''Builds and returns an entry string. Does not include the permissions bit if they are not provided.'''
+    if use_nfsv4_acls:
+        return ':'.join([etype, entity, permissions, 'allow'])
     if permissions:
         return etype + ':' + entity + ':' + permissions
     else:
@@ -243,6 +245,7 @@ def main():
             follow=dict(required=False, type='bool', default=True),
             default=dict(required=False, type='bool', default=False),
             recursive=dict(required=False, type='bool', default=False),
+            use_nfsv4_acls=dict(required=False, type='bool', default=False)
         ),
         supports_check_mode=True,
     )
@@ -259,6 +262,7 @@ def main():
     follow = module.params.get('follow')
     default = module.params.get('default')
     recursive = module.params.get('recursive')
+    use_nfsv4_acls = module.params.get('use_nfsv4_acls')
 
     if not os.path.exists(path):
         module.fail_json(msg="Path not found or not accessible.")
@@ -293,11 +297,15 @@ def main():
         if default_flag != None:
             default = default_flag
 
+    if get_platform().lower() == 'freebsd':
+        if recursive:
+            module.fail_json(msg="recursive is not supported on that platform.")
+
     changed = False
     msg = ""
 
     if state == 'present':
-        entry = build_entry(etype, entity, permissions)
+        entry = build_entry(etype, entity, permissions, use_nfsv4_acls)
         command = build_command(
             module, 'set', path, follow,
             default, recursive, entry
@@ -309,7 +317,7 @@ def main():
         msg = "%s is present" % entry
 
     elif state == 'absent':
-        entry = build_entry(etype, entity)
+        entry = build_entry(etype, entity, use_nfsv4_acls)
         command = build_command(
             module, 'rm', path, follow,
             default, recursive, entry
