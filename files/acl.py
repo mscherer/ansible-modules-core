@@ -258,8 +258,8 @@ def main():
         supports_check_mode=True,
     )
 
-    if get_platform().lower() != 'linux':
-        module.fail_json(msg="The acl module is only available for Linux distributions.")
+    if get_platform().lower() not in ['linux', 'freebsd']:
+        module.fail_json(msg="The acl module is not available on this system.")
 
     path = module.params.get('name')
     entry = module.params.get('entry')
