@@ -42,6 +42,13 @@ options:
     required: true
     default: null
     choices: [ 'yes', 'no' ]
+  ignore_missing:
+    description:
+      - Ignore errors if the boolean do not exist in the policy
+    required: false
+    default: no
+    choices: ['yes', 'no' ]
+    version_added: "2.2"
 notes:
    - Not tested on any debian based system
 requirements: [ ]
@@ -162,6 +169,7 @@ def main():
         argument_spec = dict(
             name=dict(required=True),
             persistent=dict(default='no', type='bool'),
+            ignore_missing=dict(default='no', type='bool'),
             state=dict(required=True, type='bool')
         ),
         supports_check_mode=True
@@ -179,11 +187,15 @@ def main():
     name = module.params['name']
     persistent = module.params['persistent']
     state = module.params['state']
+    ignore_missing = module.params['ignore_missing']
     result = {}
     result['name'] = name
 
     if not has_boolean_value(module, name):
-        module.fail_json(msg="SELinux boolean %s does not exist." % name)
+        if ignore_missing:
+            module.exit_json(changed=False)
+        else:
+            module.fail_json(msg="SELinux boolean %s does not exist." % name)
 
     cur_value = get_boolean_value(module, name)
 
