@@ -170,7 +170,13 @@ def main():
         write_changes(module, result[0], dest)
 
     msg, changed = check_file_attrs(module, changed, msg)
-    module.exit_json(changed=changed, msg=msg, diff=diff)
+
+    result = {'changed': changed, 
+              'msg': msg}
+    if module._diff:
+        result['diff'] = diff
+
+    module.exit_json(**result)
 
 # this is magic, see lib/ansible/module_common.py
 from ansible.module_utils.basic import *
