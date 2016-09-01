@@ -374,9 +374,10 @@ def mount(module, **kwargs):
         cmd += ['-o', 'remount']
 
     if get_platform().lower() == 'freebsd':
-        cmd += ['-F', args['fstab']]
-    elif get_platform().lower() == 'linux' and args['fstab'] != '/etc/fstab':
-        cmd += ['-T', args['fstab']]
+        cmd += [ '-F', args['fstab']]
+
+    if get_platform().lower() == 'linux' and args['fstab'] != '/etc/fstab':
+        cmd += [ '-T', args['fstab']]
 
     cmd += [name]
 
