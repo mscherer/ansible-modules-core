@@ -623,6 +623,7 @@ def install(module, items, repoq, yum_basecmd, conf_file, en_repos, dis_repos):
             # look up what pkgs provide this
             pkglist = what_provides(module, repoq, spec, conf_file, en_repos=en_repos, dis_repos=dis_repos)
             if not pkglist:
+                res['rc'] = 1
                 res['msg'] += "No Package matching '%s' found available, installed or updated" % spec
                 module.fail_json(**res)
 
@@ -630,6 +631,7 @@ def install(module, items, repoq, yum_basecmd, conf_file, en_repos, dis_repos):
             # so that we don't hang on the yum operation later
             conflicts = transaction_exists(pkglist)
             if len(conflicts) > 0:
+                res['rc'] = 1
                 res['msg'] += "The following packages have pending transactions: %s" % ", ".join(conflicts)
                 module.fail_json(**res)
 
