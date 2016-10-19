@@ -632,6 +632,11 @@ class FreeBSDHostname(Hostname):
     distribution = None
     strategy_class = FreeBSDStrategy
 
+class NetBSDHostname(Hostname):
+    platform = 'NetBSD'
+    distribution = None
+    strategy_class = FreeBSDStrategy
+
 
 # ===========================================
 
