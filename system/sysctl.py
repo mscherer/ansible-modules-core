@@ -102,6 +102,7 @@ EXAMPLES = '''
 import os
 import tempfile
 import re
+from ansible.module_utils.basic import get_platform, AnsibleModule
 
 class SysctlModule(object):
 
@@ -366,6 +367,5 @@ def main():
     module.exit_json(changed=result.changed)
 
 # import module snippets
-from ansible.module_utils.basic import *
 if __name__ == '__main__':
     main()
