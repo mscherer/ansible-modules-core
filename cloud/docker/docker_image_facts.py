@@ -156,10 +156,9 @@ images:
     ]
 '''
 
-from ansible.module_utils.docker_common import *
+from ansible.module_utils.docker_common import DockerBaseClass
 
 try:
-    from docker import auth
     from docker import utils
 except ImportError:
     # missing docker-py handled in docker_common
@@ -236,9 +235,6 @@ def main():
     ImageManager(client, results)
     client.module.exit_json(**results)
 
-
-# import module snippets
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()
